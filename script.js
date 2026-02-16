@@ -3,7 +3,7 @@
             {
                 nombre: 'PIMCO Funds Global - Income Fund - INST EUR',
                 gestora: 'PIMCO',
-                categoria: 'RF',
+                categoria: 'RFI GLOBAL',
                 tfcRetail: 1.45,
                 tfcLimpia: 0.55,
                 isinRetail: 'IE00B84J9L26',
