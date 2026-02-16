@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparador EAF: Retail vs Asesoramiento</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="card">
+            <div class="header">
+                <svg class="header-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                </svg>
+                <h1>Comparador EAF: Retail vs Asesoramiento</h1>
+            </div>
+            <p class="subtitle">Demuestra el valor de tu asesoramiento independiente</p>
+        </div>
+
+        <!-- Buscador de Fondos -->
+        <div class="card">
+            <h3 style="margin-bottom: 16px; color: #1e293b;">🔍 Buscar Fondo</h3>
+            <div class="search-container">
+                <svg class="search-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nombre, gestora o categoría...">
+            </div>
+
+            <div class="fondos-grid" id="fondosGrid">
+                <!-- Los fondos se cargarán aquí dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Parámetros de cálculo -->
+        <div class="card" id="parametrosCard" class="hidden">
+            <h3 style="margin-bottom: 16px; color: #1e293b;">⚙️ Parámetros de Cálculo</h3>
+            
+            <div class="form-grid">
+                <div class="input-group">
+                    <label class="input-label">Inversión Inicial (€)</label>
+                    <input type="number" id="inversionInicial" class="input-field" value="50000" min="0" step="1000">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Años de Inversión</label>
+                    <input type="number" id="años" class="input-field" value="10" min="1" max="50">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Rentabilidad Anual (%)</label>
+                    <input type="number" id="rentabilidad" class="input-field" value="7" step="0.1" min="0">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Tus Honorarios (%)</label>
+                    <input type="number" id="comisionAsesor" class="input-field" value="0.50" step="0.05" min="0" max="5">
+                </div>
+            </div>
+
+            <div class="info-box info-box-indigo">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink: 0;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+                <p class="info-text info-text-indigo">Ajusta estos parámetros según el perfil de tu cliente. Los cálculos se actualizarán automáticamente.</p>
+            </div>
+
+            <button class="btn-calcular" onclick="updateComparativa()">Calcular Comparativa</button>
+        </div>
+
+        <!-- Resultados -->
+        <div id="resultadosSection" class="hidden">
+            <!-- Comparativa Visual -->
+            <div class="comparativa-section">
+                <div class="resultado-box resultado-retail">
+                    <div class="resultado-titulo">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path>
+                            <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        Banco (Clase Retail)
+                    </div>
+                    <div class="metrica">
+                        <span class="metrica-label">TFC del Fondo</span>
+                        <span class="metrica-value" style="color: #f97316;" id="retailTFC">-</span>
+                    </div>
+                    <div class="metrica">
+                        <span class="metrica-label">Costes Totales</span>
+                        <span class="metrica-value" style="color: #f97316;" id="retailCostesTotal">-</span>
+                    </div>
+                    <div class="metrica">
+                        <span class="metrica-label">Capital Final</span>
+                        <span class="metrica-value" style="color: #f97316;" id="retailCapitalFinal">-</span>
+                    </div>
+                </div>
+
+                <div class="resultado-box resultado-asesor">
+                    <div class="resultado-titulo">
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
+                        </svg>
+                        EAF (Limpia + Honorarios)
+                    </div>
+                    <div class="metrica">
+                        <span class="metrica-label">TFC del Fondo</span>
+                        <span class="metrica-value" style="color: #10b981;" id="limpiaTFC">-</span>
+                    </div>
+                    <div class="metrica">
+                        <span class="metrica-label">Honorarios Asesoramiento</span>
+                        <span class="metrica-value" style="color: #4338ca;" id="honorarios">-</span>
+                    </div>
+                    <div class="metrica">
+                        <span class="metrica-label">Coste Total</span>
+                        <span class="metrica-value" style="color: #10b981;" id="costeTotal">-</span>
+                    </div>
+                    <div class="metrica">
+                        <span class="metrica-label">Costes Totales</span>
+                        <span class="metrica-value" style="color: #10b981;" id="limpiaCostesTotal">-</span>
+                    </div>
+                    <div class="metrica">
+                        <span class="metrica-label">Capital Final</span>
+                        <span class="metrica-value" style="color: #10b981;" id="limpiaCapitalFinal">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla Comparativa -->
+            <div class="card">
+                <h3 style="margin-bottom: 16px; color: #1e293b;">📊 Tabla Comparativa Detallada</h3>
+                <table class="tabla-comparativa">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th class="text-center">Banco (Retail)</th>
+                            <th class="text-center">EAF (Limpia)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaComparativa">
+                        <!-- Se llenará dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="card">
+                <h3 style="margin-bottom: 8px; color: #1e293b;">📈 Evolución del Capital</h3>
+                <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">Proyección del capital a lo largo del tiempo</p>
+                <div class="chart-container">
+                    <canvas id="chartEvolucion"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom: 8px; color: #1e293b;" id="chartDiferenciaTitle">💰 Ahorro Acumulado con EAF</h3>
+                <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">Diferencia anual entre ambas opciones</p>
+                <div class="chart-container">
+                    <canvas id="chartDiferencia"></canvas>
+                </div>
+            </div>
+
+            <!-- Propuesta de Valor -->
+            <div id="propuestaValor"></div>
+        </div>
+    </div>
+
+<script src="script.js"></script>
+</body>
+</html>
